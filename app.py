@@ -24,7 +24,7 @@ INSTANCE = ROOT / "instance"
 DB_PATH = Path(os.environ.get("ZVERTURET_DB", str(INSTANCE / "zverturet.sqlite3")))
 HOST = os.environ.get("ZVERTURET_HOST", "127.0.0.1")
 PORT = int(os.environ.get("PORT", os.environ.get("ZVERTURET_PORT", "5050")))
-SECRET = os.environ.get("ZVERTURET_SECRET", "local-demo-secret-change-before-deploy")
+SECRET = os.environ.get("ZVERTURET_SECRET") or secrets.token_urlsafe(48)
 COOKIE_SECURE = os.environ.get("ZVERTURET_COOKIE_SECURE", "false").lower() in {"1", "true", "yes"}
 SESSION_SECONDS = 7 * 24 * 60 * 60
 PASSWORD_ROUNDS = 180_000
@@ -232,6 +232,23 @@ class ZverturetHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def send_text(self, status: int, content: str, content_type: str) -> None:
+        data = content.encode("utf-8")
+        self.send_response(status)
+        self.send_header("Content-Type", f"{content_type}; charset=utf-8")
+        self.send_header("Content-Length", str(len(data)))
+        self.send_header("Cache-Control", "public, max-age=300")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.end_headers()
+        self.wfile.write(data)
+
+    def public_origin(self) -> str:
+        scheme = self.headers.get("X-Forwarded-Proto", "https" if COOKIE_SECURE else "http").split(",", 1)[0].strip()
+        host = self.headers.get("X-Forwarded-Host", self.headers.get("Host", "localhost")).split(",", 1)[0].strip()
+        if scheme not in {"http", "https"} or not re.fullmatch(r"[A-Za-z0-9.:-]+", host):
+            return "https://zverturet.example"
+        return f"{scheme}://{host}"
+
     @staticmethod
     def session_cookie(value: str, max_age: int) -> str:
         attributes = ["HttpOnly", "SameSite=Lax", "Path=/", f"Max-Age={max_age}"]
@@ -267,6 +284,20 @@ class ZverturetHandler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
+        if parsed.path == "/robots.txt":
+            origin = self.public_origin()
+            self.send_text(200, f"User-agent: *\nAllow: /\nSitemap: {origin}/sitemap.xml\n", "text/plain")
+            return
+        if parsed.path == "/sitemap.xml":
+            origin = self.public_origin()
+            sitemap = (
+                '<?xml version="1.0" encoding="UTF-8"?>'
+                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+                f"<url><loc>{origin}/</loc></url>"
+                "</urlset>"
+            )
+            self.send_text(200, sitemap, "application/xml")
+            return
         if parsed.path == "/" or parsed.path == "/index.html":
             self.serve_file(STATIC / "index.html")
             return
