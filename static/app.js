@@ -199,6 +199,7 @@
     const name = post.display_name || post.username;
     const follow = post.is_own ? '' : `<button class="follow-button${post.is_following ? ' following' : ''}" data-follow="${post.author_id}" type="button" aria-pressed="${Boolean(post.is_following)}">${post.is_following ? 'Вы подписаны' : 'Подписаться'}</button>`;
     const isMeme = Boolean(post.meme_text);
+    const videoLabel = isMeme ? '<span class="video-label meme-badge"><i></i> МЕМ</span>' : '';
     const tiktokId = post.video_url.match(/^https?:\/\/(?:www\.)?tiktok\.com\/@[a-z0-9._]+\/video\/(\d+)/i)?.[1];
     const video = tiktokId
       ? `<iframe class="tiktok-player" src="https://www.tiktok.com/player/v1/${tiktokId}?controls=1&volume_control=1&music_info=1&description=1&autoplay=0&muted=0&loop=1" title="TikTok от ${escapeHtml(name)}" loading="lazy" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`
@@ -212,7 +213,7 @@
       </header>
       <div class="video-stage${tiktokId ? ' tiktok-stage' : ''}">
         ${video}
-        <span class="video-vignette"></span><span class="video-label${isMeme ? ' meme-badge' : ''}"><i></i> ${isMeme ? 'МЕМ' : 'ZV SHORTS'}</span>
+        <span class="video-vignette"></span>${videoLabel}
         ${isMeme ? `<div class="meme-overlay"><p>${escapeHtml(post.meme_text)}</p></div>` : ''}
         <div class="action-rail">
           <button class="action-button${post.liked ? ' liked' : ''}" data-action="like" type="button" aria-label="${post.liked ? 'Убрать лайк' : 'Поставить лайк'}" aria-pressed="${Boolean(post.liked)}"><span class="action-icon">${icon.heart}</span><span data-count="likes">${compact(post.likes_count)}</span></button>

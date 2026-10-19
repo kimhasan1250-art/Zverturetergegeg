@@ -164,15 +164,29 @@ def initialize_database() -> None:
                 "INSERT OR IGNORE INTO posts(id, user_id, caption, video_url, meme_text, created_at) VALUES (?, ?, ?, ?, ?, ?)",
                 (post_id, creator_ids[username], caption, url, meme_text, now - index * 900),
             )
-        tiktok_posts = [
-            ("tiktok-01", "Первый дуэт Кхаби с реакцией — и фирменное «ну зачем так сложно?»", "6918337565636578561"),
-            ("tiktok-02", "Кхаби и Алессандро Дель Пьеро: футбольная версия простого решения ⚽", "6964004569479204101"),
-            ("tiktok-03", "Фирменный жест Кхаби — всё понятно без слов 😂", "6939490109800729862"),
+        tiktok_creators = [
+            ("takundakambiri", "Takunda Kambiri", "Короткие реакции и тренды TikTok 2026."),
+            ("blinkiuee0", "blinkiuee0", "Юмор и тренды TikTok 2026."),
+            ("visacashapprb", "visacashapprb", "Короткие ролики и тренды TikTok 2026."),
         ]
-        for post_id, caption, video_id in tiktok_posts:
+        for username, display_name, bio in tiktok_creators:
+            db.execute(
+                "INSERT OR IGNORE INTO users(username, display_name, bio, created_at) VALUES (?, ?, ?, ?)",
+                (username, display_name, bio, now),
+            )
+        creator_ids = {row["username"]: row["id"] for row in db.execute("SELECT id, username FROM users")}
+        tiktok_posts = [
+            ("tiktok-01", "khaby.lame", "Первый дуэт Кхаби с реакцией — и фирменное «ну зачем так сложно?»", "6918337565636578561"),
+            ("tiktok-02", "khaby.lame", "Кхаби и Алессандро Дель Пьеро: футбольная версия простого решения ⚽", "6964004569479204101"),
+            ("tiktok-03", "khaby.lame", "Фирменный жест Кхаби — всё понятно без слов 😂", "6939490109800729862"),
+            ("tiktok-2026-reaction", "takundakambiri", "Тренд TikTok 2026: реакция нарастающей серьёзности 😅", "7689632700231175438"),
+            ("tiktok-2026-bow", "blinkiuee0", "Тренд TikTok 2026: торжественный выход с неожиданным поклоном 😂", "7692775713157418246"),
+            ("tiktok-2026-work", "visacashapprb", "Тренд TikTok 2026: восемь часов работы за восемь секунд 😂", "7694350692852452640"),
+        ]
+        for index, (post_id, username, caption, video_id) in enumerate(tiktok_posts):
             db.execute(
                 "INSERT OR IGNORE INTO posts(id, user_id, caption, video_url, created_at) VALUES (?, ?, ?, ?, ?)",
-                (post_id, creator_ids["khaby.lame"], caption, f"https://www.tiktok.com/@khaby.lame/video/{video_id}", now),
+                (post_id, creator_ids[username], caption, f"https://www.tiktok.com/@{username}/video/{video_id}", now - index * 30),
             )
 
 
