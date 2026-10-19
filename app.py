@@ -23,8 +23,9 @@ STATIC = ROOT / "static"
 INSTANCE = ROOT / "instance"
 DB_PATH = Path(os.environ.get("ZVERTURET_DB", str(INSTANCE / "zverturet.sqlite3")))
 HOST = os.environ.get("ZVERTURET_HOST", "127.0.0.1")
-PORT = int(os.environ.get("ZVERTURET_PORT", "5050"))
+PORT = int(os.environ.get("PORT", os.environ.get("ZVERTURET_PORT", "5050")))
 SECRET = os.environ.get("ZVERTURET_SECRET", "local-demo-secret-change-before-deploy")
+COOKIE_SECURE = os.environ.get("ZVERTURET_COOKIE_SECURE", "false").lower() in {"1", "true", "yes"}
 SESSION_SECONDS = 7 * 24 * 60 * 60
 PASSWORD_ROUNDS = 180_000
 
@@ -203,6 +204,13 @@ class ZverturetHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    @staticmethod
+    def session_cookie(value: str, max_age: int) -> str:
+        attributes = ["HttpOnly", "SameSite=Lax", "Path=/", f"Max-Age={max_age}"]
+        if COOKIE_SECURE:
+            attributes.insert(1, "Secure")
+        return f"zv_session={value}; " + "; ".join(attributes)
+
     def read_json(self) -> dict:
         length = int(self.headers.get("Content-Length", "0"))
         if length > 64_000:
@@ -298,7 +306,7 @@ class ZverturetHandler(BaseHTTPRequestHandler):
             self.register()
             return
         if parsed.path == "/api/logout":
-            self.send_json(200, {"ok": True}, {"Set-Cookie": "zv_session=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0"})
+            self.send_json(200, {"ok": True}, {"Set-Cookie": self.session_cookie("", 0)})
             return
         user_id = self.require_user()
         if user_id is None:
@@ -385,7 +393,7 @@ class ZverturetHandler(BaseHTTPRequestHandler):
         self.send_json(
             201,
             {"ok": True, "user": self.user_payload(user_id)},
-            {"Set-Cookie": f"zv_session={make_session(user_id)}; HttpOnly; SameSite=Lax; Path=/; Max-Age={SESSION_SECONDS}"},
+            {"Set-Cookie": self.session_cookie(make_session(user_id), SESSION_SECONDS)},
         )
 
     def login(self) -> None:
@@ -402,7 +410,7 @@ class ZverturetHandler(BaseHTTPRequestHandler):
         if not valid:
             self.send_json(401, {"error": "Неверный логин или пароль."})
             return
-        self.send_json(200, {"ok": True, "user": self.user_payload(user["id"])}, {"Set-Cookie": f"zv_session={make_session(user['id'])}; HttpOnly; SameSite=Lax; Path=/; Max-Age={SESSION_SECONDS}"})
+        self.send_json(200, {"ok": True, "user": self.user_payload(user["id"])}, {"Set-Cookie": self.session_cookie(make_session(user["id"]), SESSION_SECONDS)})
 
     def user_payload(self, user_id: int) -> dict:
         with db_connection() as db:

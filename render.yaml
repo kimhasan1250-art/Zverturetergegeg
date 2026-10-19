@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: zverturet-kimhasan1250-art
+    runtime: python
+    plan: free
+    buildCommand: python --version
+    startCommand: python app.py
+    envVars:
+      - key: ZVERTURET_HOST
+        value: 0.0.0.0
+      - key: ZVERTURET_COOKIE_SECURE
+        value: "true"
+      - key: ZVERTURET_SECRET
+        generateValue: true
