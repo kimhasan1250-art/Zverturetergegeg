@@ -199,14 +199,19 @@
     const name = post.display_name || post.username;
     const follow = post.is_own ? '' : `<button class="follow-button${post.is_following ? ' following' : ''}" data-follow="${post.author_id}" type="button" aria-pressed="${Boolean(post.is_following)}">${post.is_following ? 'Вы подписаны' : 'Подписаться'}</button>`;
     const isMeme = Boolean(post.meme_text);
+    const tiktokId = post.video_url.match(/^https?:\/\/(?:www\.)?tiktok\.com\/@[a-z0-9._]+\/video\/(\d+)/i)?.[1];
+    const video = tiktokId
+      ? `<iframe class="tiktok-player" src="https://www.tiktok.com/player/v1/${tiktokId}?controls=1&volume_control=1&music_info=1&description=1&autoplay=0&muted=0&loop=1" title="TikTok от ${escapeHtml(name)}" loading="lazy" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`
+      : `<video src="${escapeHtml(post.video_url)}" muted loop playsinline preload="metadata" controls aria-label="Видео от ${escapeHtml(name)}"></video>`;
+    const sourceLink = tiktokId ? `<a class="post-source-link" href="${escapeHtml(post.video_url)}" target="_blank" rel="noopener noreferrer">Открыть оригинал в TikTok ↗</a>` : '';
     return `<article class="post-card" data-post="${escapeHtml(post.id)}">
       <header class="post-top">
         <div class="avatar post-avatar">${escapeHtml(initials(name))}</div>
         <div class="author-copy"><strong>${escapeHtml(name)}</strong><span>@${escapeHtml(post.username)} <i aria-hidden="true">·</i> ${escapeHtml(ago(post.created_at))}</span></div>
         ${follow}<button class="post-menu" type="button" data-post-menu aria-label="Ещё" title="Ещё">···</button>
       </header>
-      <div class="video-stage">
-        <video src="${escapeHtml(post.video_url)}" muted loop playsinline preload="metadata" controls aria-label="Видео от ${escapeHtml(name)}"></video>
+      <div class="video-stage${tiktokId ? ' tiktok-stage' : ''}">
+        ${video}
         <span class="video-vignette"></span><span class="video-label${isMeme ? ' meme-badge' : ''}"><i></i> ${isMeme ? 'МЕМ' : 'ZV SHORTS'}</span>
         ${isMeme ? `<div class="meme-overlay"><p>${escapeHtml(post.meme_text)}</p></div>` : ''}
         <div class="action-rail">
@@ -215,7 +220,7 @@
           <button class="action-button" data-action="comment" type="button" aria-label="Комментарии"><span class="action-icon">${icon.comments}</span><span>Ответить</span></button>
         </div>
       </div>
-      <div class="post-content"><p class="post-caption"><strong>${escapeHtml(name)}</strong><span class="handle">@${escapeHtml(post.username)}</span>${escapeHtml(post.caption)}</p><div class="post-meta"><span>Момент из ленты</span><span><i></i> ${escapeHtml(ago(post.created_at))}</span></div></div>
+      <div class="post-content"><p class="post-caption"><strong>${escapeHtml(name)}</strong><span class="handle">@${escapeHtml(post.username)}</span>${escapeHtml(post.caption)}</p><div class="post-meta"><span>${sourceLink || 'Момент из ленты'}</span><span><i></i> ${escapeHtml(ago(post.created_at))}</span></div></div>
     </article>`;
   }
 
@@ -376,7 +381,7 @@
       $('#loginUsername').value = 'zverturet';
       $('#loginPassword').value = '12345678';
       $('#loginError').textContent = '';
-      $('#loginPassword').focus();
+      $('#loginForm').requestSubmit();
     });
     $('#passwordToggle').addEventListener('click', event => {
       const input = $('#loginPassword');

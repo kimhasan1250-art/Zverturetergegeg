@@ -145,6 +145,10 @@ def initialize_database() -> None:
             ("clip-bunny", "https://media.w3.org/2010/05/bunny/trailer.mp4"),
         ):
             db.execute("UPDATE posts SET video_url=? WHERE id=?", (url, post_id))
+        db.execute(
+            "INSERT OR IGNORE INTO users(username, display_name, bio, created_at) VALUES (?, ?, ?, ?)",
+            ("khaby.lame", "Khaby Lame", "Комедийные реакции и видео из TikTok.", int(time.time())),
+        )
         creator_ids = {row["username"]: row["id"] for row in db.execute("SELECT id, username FROM users")}
         meme_posts = [
             ("meme-01", "studiomin", "Я НА 5 МИНУТ ПРИЛЯГУ\nПОНЕДЕЛЬНИК: ПРОШЛО 3 ЧАСА", "Планировал короткую паузу. Получился отпуск без предупреждения.", "https://media.w3.org/2010/05/bunny/trailer.mp4"),
@@ -159,6 +163,16 @@ def initialize_database() -> None:
             db.execute(
                 "INSERT OR IGNORE INTO posts(id, user_id, caption, video_url, meme_text, created_at) VALUES (?, ?, ?, ?, ?, ?)",
                 (post_id, creator_ids[username], caption, url, meme_text, now - index * 900),
+            )
+        tiktok_posts = [
+            ("tiktok-01", "Первый дуэт Кхаби с реакцией — и фирменное «ну зачем так сложно?»", "6918337565636578561"),
+            ("tiktok-02", "Кхаби и Алессандро Дель Пьеро: футбольная версия простого решения ⚽", "6964004569479204101"),
+            ("tiktok-03", "Фирменный жест Кхаби — всё понятно без слов 😂", "6939490109800729862"),
+        ]
+        for post_id, caption, video_id in tiktok_posts:
+            db.execute(
+                "INSERT OR IGNORE INTO posts(id, user_id, caption, video_url, created_at) VALUES (?, ?, ?, ?, ?)",
+                (post_id, creator_ids["khaby.lame"], caption, f"https://www.tiktok.com/@khaby.lame/video/{video_id}", now),
             )
 
 
