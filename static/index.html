@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f5f2">
+  <meta name="description" content="Zverturet — короткие видео, живые моменты и люди рядом.">
+  <title>Zverturet — моменты рядом</title>
+  <link rel="preconnect" href="https://media.w3.org">
+  <link rel="preconnect" href="https://interactive-examples.mdn.mozilla.net">
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <main class="login-screen" id="loginScreen">
+    <section class="login-card" aria-labelledby="loginTitle">
+      <a class="brand brand-login" href="#" aria-label="Zverturet">
+        <span class="brand-mark">Z</span><span class="brand-word">Zverturet</span>
+      </a>
+      <div id="loginView">
+        <p class="eyebrow login-eyebrow">ТВОЁ ПРОСТРАНСТВО</p>
+        <h1 id="loginTitle">Моменты ближе.</h1>
+        <p class="login-lead">Короткие видео, которые хочется пересматривать.</p>
+        <form id="loginForm" class="login-form">
+          <label for="loginUsername">Логин</label>
+          <input id="loginUsername" name="username" autocomplete="username" placeholder="Твой логин" required>
+          <label for="loginPassword">Пароль</label>
+          <div class="password-wrap">
+            <input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="Твой пароль" required>
+            <button class="password-toggle" id="passwordToggle" type="button" aria-label="Показать пароль">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.8 12s3.2-6 9.2-6 9.2 6 9.2 6-3.2 6-9.2 6-9.2-6-9.2-6Z"/><circle cx="12" cy="12" r="2.7"/></svg>
+            </button>
+          </div>
+          <p class="form-error" id="loginError" role="alert"></p>
+          <button class="button button-dark button-wide" type="submit"><span>Войти</span><span aria-hidden="true">↗</span></button>
+        </form>
+        <div class="demo-box">
+          <div class="demo-icon" aria-hidden="true">✦</div>
+          <div class="demo-copy"><strong>Попробуй демо-аккаунт</strong><span>Логин: zverturet · Пароль: 12345678</span></div>
+          <button class="demo-fill" id="fillDemo" type="button" aria-label="Заполнить данные демо-аккаунта">↗</button>
+        </div>
+        <p class="login-switch">Впервые в Zverturet? <button id="showRegister" type="button">Создать аккаунт</button></p>
+      </div>
+      <div id="registerView" hidden>
+        <p class="eyebrow login-eyebrow">НОВАЯ ИСТОРИЯ</p>
+        <h1 id="registerTitle">Создай свой ритм.</h1>
+        <p class="login-lead">Пара деталей — и ты внутри.</p>
+        <form id="registerForm" class="login-form">
+          <label for="registerName">Имя профиля</label>
+          <input id="registerName" name="display_name" autocomplete="name" maxlength="40" placeholder="Например, Алина" required>
+          <label for="registerUsername">Логин</label>
+          <input id="registerUsername" name="username" autocomplete="username" minlength="3" maxlength="24" pattern="[A-Za-z0-9_.]{3,24}" placeholder="Например, alina_01" required>
+          <div class="password-label-row"><label for="registerPassword">Пароль</label><button class="generate-password-button" id="generatePassword" type="button">✦ Придумать пароль</button></div>
+          <div class="password-wrap">
+            <input id="registerPassword" name="password" type="password" autocomplete="new-password" maxlength="128" placeholder="Придумай пароль" required>
+            <button class="password-toggle" id="registerPasswordToggle" type="button" aria-label="Показать пароль">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.8 12s3.2-6 9.2-6 9.2 6 9.2 6-3.2 6-9.2 6-9.2-6-9.2-6Z"/><circle cx="12" cy="12" r="2.7"/></svg>
+            </button>
+          </div>
+          <ul class="password-rules" id="passwordRules" aria-label="Требования к паролю">
+            <li data-rule="length">Не менее 8 символов</li>
+            <li data-rule="uppercase">Заглавная латинская буква</li>
+            <li data-rule="lowercase">Строчная латинская буква</li>
+            <li data-rule="number">Цифра</li>
+            <li data-rule="symbol">Спецсимвол, например ! или #</li>
+          </ul>
+          <p class="password-generated-note" id="passwordGeneratedNote" role="status" hidden>Надёжный пароль создан и добавлен в оба поля.</p>
+          <label for="registerConfirm">Повтори пароль</label>
+          <input id="registerConfirm" name="confirm_password" type="password" autocomplete="new-password" maxlength="128" placeholder="Ещё раз тот же пароль" required>
+          <p class="form-error" id="registerError" role="alert"></p>
+          <button class="button button-dark button-wide" type="submit"><span>Создать аккаунт</span><span aria-hidden="true">↗</span></button>
+        </form>
+        <p class="login-switch">Уже есть аккаунт? <button id="showLogin" type="button">Войти</button></p>
+      </div>
+      <p class="login-foot">Тихое место для твоих историй <span>·</span> 2026</p>
+    </section>
+    <div class="login-side-note" aria-hidden="true"><span>01</span><span class="side-line"></span><span>Замечай. Сохраняй. Делись.</span></div>
+  </main>
+
+  <div class="app-shell" id="appShell" hidden>
+    <aside class="sidebar">
+      <a class="brand" href="#feed" aria-label="Zverturet — на главную">
+        <span class="brand-mark">Z</span><span class="brand-word">Zverturet</span>
+      </a>
+      <nav class="primary-nav" aria-label="Главная навигация">
+        <button class="nav-link active" data-nav="feed" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg><span>Лента</span></button>
+        <button class="nav-link" data-nav="following" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20v-1.5a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4V20"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 0 0-8M21 20v-1.5a4 4 0 0 0-3-3.87"/></svg><span>Подписки</span></button>
+        <button class="nav-link" data-nav="profile" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg><span>Мой профиль</span></button>
+      </nav>
+      <div class="sidebar-rule"></div>
+      <button class="nav-link settings-link" data-nav="settings" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.2.9-1.2 2.1-1.4-.6a7.8 7.8 0 0 1-1.7 1l-.2 1.5h-2.4l-.2-1.5a7.8 7.8 0 0 1-1.7-1l-1.4.6-1.2-2.1 1.2-.9a7.9 7.9 0 0 1 0-2L7.3 12l1.2-2.1 1.4.6a7.8 7.8 0 0 1 1.7-1l.2-1.5h2.4l.2 1.5a7.8 7.8 0 0 1 1.7 1l1.4-.6 1.2 2.1-1.2.9a7.9 7.9 0 0 1-.1 2.1Z"/></svg><span>Настройки</span></button>
+      <div class="sidebar-bottom">
+        <div class="user-chip"><div class="avatar avatar-small" id="sidebarAvatar">Z</div><div class="chip-copy"><strong id="sidebarName">Zverturet</strong><span id="sidebarHandle">@zverturet</span></div><button class="icon-button logout-button" id="logoutButton" type="button" title="Выйти" aria-label="Выйти"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3"/><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></svg></button></div>
+        <p class="sidebar-caption">Маленькие истории. Большой мир.</p>
+      </div>
+    </aside>
+
+    <main class="timeline-column" id="feed">
+      <header class="mobile-header"><a class="brand" href="#feed"><span class="brand-mark">Z</span><span class="brand-word">Zverturet</span></a><button class="icon-button mobile-theme" id="themeToggleMobile" type="button" title="Сменить тему" aria-label="Сменить тему"></button></header>
+      <div class="feed-heading">
+        <div><p class="eyebrow">ПОНЕДЕЛЬНИК, 19 ОКТЯБРЯ</p><h1>Лента <span class="heading-dot">.</span></h1></div>
+        <button class="icon-button theme-toggle" id="themeToggle" type="button" title="Сменить тему" aria-label="Сменить тему"></button>
+      </div>
+      <div class="feed-tabs" role="tablist" aria-label="Лента">
+        <button class="feed-tab selected" id="forYouTab" role="tab" aria-selected="true" type="button">Для тебя<span class="tab-line"></span></button>
+        <button class="feed-tab" id="followingTab" role="tab" aria-selected="false" type="button">Подписки</button>
+        <span class="live-indicator"><i></i> СЕЙЧАС</span>
+      </div>
+      <section class="feed-list" id="feedList" aria-live="polite" aria-label="Видео"></section>
+      <div class="feed-loading" id="feedLoading" hidden><span class="loader"></span>Загружаем моменты…</div>
+    </main>
+
+    <aside class="right-rail">
+      <section class="welcome-card">
+        <div class="welcome-top"><span class="eyebrow">ТВОЯ СТРАНИЦА</span><button class="icon-button small-icon" type="button" data-nav="profile" aria-label="Открыть профиль">↗</button></div>
+        <div class="profile-hero"><div class="avatar avatar-large" id="railAvatar">Z</div><div><h2 id="railName">Zverturet</h2><p id="railHandle">@zverturet</p></div></div>
+        <p class="rail-bio" id="railBio">Лента коротких историй. Найди свой ритм.</p>
+        <div class="stats-row">
+          <div class="stat"><strong id="statPosts">0</strong><span>видео</span></div>
+          <div class="stat"><strong id="statLikes">0</strong><span>лайков</span></div>
+          <div class="stat"><strong id="statFollowing">0</strong><span>подписок</span></div>
+          <div class="stat"><strong id="statFollowers">0</strong><span>подписчиков</span></div>
+        </div>
+        <button class="button button-outline button-wide edit-profile-button" data-nav="profile" type="button">Настроить профиль <span>↗</span></button>
+      </section>
+      <section class="suggestions-section">
+        <div class="section-heading"><div><p class="eyebrow">МОЖЕТ ПОНРАВИТЬСЯ</p><h2>Люди рядом</h2></div><span class="section-count" id="suggestionCount">04</span></div>
+        <div class="suggestions-list" id="suggestionsList"></div>
+      </section>
+      <footer class="rail-footer"><span>О ZVERTURET</span><span>·</span><span>ПРАВИЛА</span><span>·</span><span>© 2026</span></footer>
+    </aside>
+    <nav class="mobile-nav" aria-label="Мобильная навигация">
+      <button class="mobile-nav-item active" data-nav="feed" type="button" aria-label="Лента"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg></button>
+      <button class="mobile-nav-item" data-nav="following" type="button" aria-label="Подписки"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20v-1.5a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4V20"/><circle cx="9.5" cy="7" r="4"/><path d="M17 11a4 4 0 0 0 0-8M21 20v-1.5a4 4 0 0 0-3-3.87"/></svg></button>
+      <button class="mobile-nav-item" data-nav="profile" type="button" aria-label="Мой профиль"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg></button>
+      <button class="mobile-nav-item" data-nav="settings" type="button" aria-label="Настройки"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.2.9-1.2 2.1-1.4-.6a7.8 7.8 0 0 1-1.7 1l-.2 1.5h-2.4l-.2-1.5a7.8 7.8 0 0 1-1.7-1l-1.4.6-1.2-2.1 1.2-.9a7.9 7.9 0 0 1 0-2L7.3 12l1.2-2.1 1.4.6a7.8 7.8 0 0 1 1.7-1l.2-1.5h2.4l.2 1.5a7.8 7.8 0 0 1 1.7 1l1.4-.6 1.2 2.1-1.2.9a7.9 7.9 0 0 1-.1 2.1Z"/></svg></button>
+    </nav>
+  </div>
+  <div class="modal-root" id="modalRoot" hidden></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
